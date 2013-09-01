@@ -9,12 +9,12 @@ POST /voting/
 Creates a new voting according request data (admin only).
 ###
 exports.createVoting = (req, res, next) ->
-  v = models.Voting.build(req.params)
+  v = models.Voting.build(req.body)
   v.save().success((savedvoting) ->
     req.log.debug
       voting: savedvoting
       , "createVoting: done"
-    res.send 201, v
+    res.send(201, v)
   ).error (err) ->
     next(err)
     
@@ -26,7 +26,6 @@ Currently all.
 exports.getVotinglist = (req, res, next) ->
   models.Voting.findAll().success (found) ->
     res.send 200, found
-    next()
 
 ###
 GET /voting/:votingID/
@@ -37,7 +36,6 @@ exports.getVoting = (req, res, next) ->
     where: {id: req.params.votingID},
   ).success((found) ->
     res.send 200, found
-    next()
   ).error (err) ->
     next(err)
   
@@ -50,13 +48,10 @@ exports.updateVoting = (req, res, next) ->
   models.Voting.find(
     where: {id: req.params.votingID},
   ).success((found) ->
-    for k, v in req.data
-      found.k = v
-    found.save().success((updated) ->
-      res.send 200, found
-      next()
+    found.updateAttributes(req.body).success((updated) ->
+      res.send 200, updated
     ).error (err) ->
-    next(err)    
+      next(err)
   ).error (err) ->
     next(err)
   

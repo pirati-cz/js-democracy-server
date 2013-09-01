@@ -1,10 +1,10 @@
 
 ###
-Represents one vote of user_id for chosen_option_id within voting_id.
+Represents one vote of user_id within voting_id.
+preference is JSON serialized answer depending on voting.type.
 ###
 module.exports = (sequelize, DataTypes) ->
   sequelize.define "Vote",
-    voting_id: DataTypes.BIGINT,
     user_id: DataTypes.BIGINT,
-    chosen_option_id: DataTypes.BIGINT,
-    issued: DataTypes.DATE
+    preference: DataTypes.STRING,
+    note: DataTypes.STRING,

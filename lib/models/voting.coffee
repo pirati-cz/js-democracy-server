@@ -8,11 +8,19 @@ module.exports = (sequelize, DataTypes) ->
     id:
       type: DataTypes.BIGINT,
       autoIncrement: true
-    name: DataTypes.STRING(64),
+    name:
+      type: DataTypes.STRING(64),
+      allowNull: false,
     desc: DataTypes.STRING,
     url:
       type: DataTypes.STRING,
       isUrl: true
-    begin: DataTypes.DATE,
-    end: DataTypes.DATE,
-    category_id: DataTypes.BIGINT
+    begin:
+      type: DataTypes.DATE,
+      allowNull: false,
+    end:
+      type: DataTypes.DATE,
+      allowNull: false,
+    category_id:
+      type: DataTypes.BIGINT,
+      allowNull: false,

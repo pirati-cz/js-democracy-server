@@ -2,12 +2,11 @@
 unless global.hasOwnProperty("db")
   Sequelize = require("sequelize")
 
-  if process.env.HEROKU_POSTGRESQL_BRONZE_URL
+  if process.env.POSTGRESQL_URL
     # the application is executed on Heroku ... use the postgres database
-    sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL,
+    sequelize = new Sequelize(process.env.POSTGRESQL_URL,
       dialect: "postgres"
       protocol: "postgres"
-      logging: true #false
     )
   else
     # the application is executed on the local machine ... use sqlite
@@ -25,8 +24,7 @@ unless global.hasOwnProperty("db")
   Vote = sequelize.import(__dirname + "/vote")
 
   # create relationships
-  Option.hasOne(Voting)
-  Vote.hasOne(Voting)
+  Voting.hasMany(Vote, {as: 'Votes'})
 
   global.db =
     Sequelize: Sequelize
@@ -35,14 +33,6 @@ unless global.hasOwnProperty("db")
     Option: Option
     Vote: Vote
 
-  #sequelize.sync();
-
-# add your other models here
-
-#
-#    Associations can be defined here. E.g. like this:
-#    global.db.User.hasMany(global.db.SomethingElse)
-#
 module.exports = global.db
 
 
