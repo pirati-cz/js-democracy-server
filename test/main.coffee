@@ -2,6 +2,7 @@
 should = require('should')
 http = require('http')
 request = require('request')
+votingtest = require('./voting')
 votetests = require('./vote')
 
 app = require(__dirname + '/../lib/app')
@@ -30,4 +31,5 @@ describe "app", ->
       res.statusCode.should.eql 200
       done()
 
+  votingtest(port)
   votetests(port)
