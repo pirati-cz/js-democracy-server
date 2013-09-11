@@ -3,7 +3,7 @@ bunyan = require("bunyan")
 express = require("express")
 api = require('./api')
   
-createLogger = (options) ->
+createLogger = () ->
 
   # In true UNIX fashion, debug messages go to stderr, and audit records go
   # to stdout, so you can split them as you like in the shell
@@ -20,32 +20,26 @@ createLogger = (options) ->
     stream: process.stderr
             
   bunyan.createLogger
-    name: options.app_name,
+    name: "democracy-server",
     streams: [default_stream, debug_stream]
 
+  
+app = express()
+logger = createLogger()
 
-###
-Returns a server with all routes defined on it
-###
-exports.createServer = (options) ->
-  assert.object options, "options"
+app.configure ->
+  app.use express.logger("dev") # 'default', 'short', 'tiny', 'dev'
+  app.use(express.compress());
+  app.use(express.methodOverride());
+  app.use(express.bodyParser());
+  app.use((req, res, next) ->
+    req.log = logger
+    next()
+  )
+  api.createAPI(app)
+
+  # Register a default '/' handler
+  app.get "/", (req, res, next) ->
+    res.send 200, app.routes
   
-  app = express()
-  logger = createLogger(options)
-  
-  app.configure ->
-    app.use express.logger("dev") # 'default', 'short', 'tiny', 'dev'
-    app.use(express.compress());
-    app.use(express.methodOverride());
-    app.use(express.bodyParser());
-    app.use((req, res, next) ->
-      req.log = logger
-      next()
-    )
-    api.createAPI(app)
-  
-    # Register a default '/' handler
-    app.get "/", (req, res, next) ->
-      res.send 200, app.routes
-  
-  app
+exports.app = app

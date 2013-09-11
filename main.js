@@ -1,15 +1,9 @@
 
 var voteserver = require('./tmp/server');
 
-var options = {
-  app_name: 'pokus',
-//  user: 'vencax',
-//  password: 'heslo'
-};
-
-var server = voteserver.createServer(options);
+var app = voteserver.app;
 
 process.env.PORT = 8080;
-server.listen((process.env.PORT || 8080), function onListening() {
-  console.log('listening at %s', server.url);
+app.listen((process.env.PORT || 8080), function onListening() {
+  console.log('listening at %s', process.env.PORT);
 });
