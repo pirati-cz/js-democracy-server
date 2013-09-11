@@ -2,6 +2,7 @@
 should = require('should')
 http = require('http')
 request = require('request')
+votetests = require('./vote')
 
 app = require(__dirname + '/../lib/app')
 port = 8080
@@ -9,7 +10,7 @@ server = http.createServer(app)
 
 
 describe "app", ->
-  
+
   before (done) ->
     server.listen port, (err, result) ->
       return done err if err
@@ -28,3 +29,5 @@ describe "app", ->
       return done err if err
       res.statusCode.should.eql 200
       done()
+
+  votetests(port)
