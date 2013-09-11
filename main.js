@@ -1,7 +1,5 @@
 
-var voteserver = require('./tmp/server');
-
-var app = voteserver.app;
+var app = require('./tmp/app');
 
 process.env.PORT = 8080;
 app.listen((process.env.PORT || 8080), function onListening() {

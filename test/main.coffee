@@ -3,7 +3,7 @@ should = require('should')
 http = require('http')
 request = require('request')
 
-app = require(__dirname + '/../lib/server').app
+app = require(__dirname + '/../lib/app')
 port = 8080
 server = http.createServer(app)
 

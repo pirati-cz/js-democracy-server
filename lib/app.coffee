@@ -42,4 +42,4 @@ app.configure ->
   app.get "/", (req, res, next) ->
     res.send 200, app.routes
   
-exports.app = app
+module.exports = app
