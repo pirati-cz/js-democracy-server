@@ -36,11 +36,13 @@
     "matchdep": "~0.1.1",
     "grunt-google-cdn": "~0.1.1",
     "grunt-ngmin": "~0.0.2",
-    "sequelize-sqlite": "*"
+    "sequelize-sqlite": "*",
+    "should": "*",
+    "request": "*"
   },
   "scripts": {
-    "start": "node main.js 2>&1 | bunyan",
-    "test": "nodeunit test"
+    "start": "node main.js",
+    "test": "mocha test/ --compilers coffee:coffee-script"
   },
   "author": "Vaclav Klecanda",
   "license": "MIT"
