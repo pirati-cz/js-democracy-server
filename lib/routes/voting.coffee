@@ -1,16 +1,20 @@
 
-
+moment = require('moment')
 errors = require('../errors')
 models = require('../models')
+
+DAY = (1000 * 60 * 60 * 24)
+DEFAULT_DURATION = process.env.VOTINGDEFAULTDURATION or DAY
 
 
 checkVotingInterva = (voting) ->
   now = new Date()
-  DAY = (1000 * 60 * 60 * 24)
   
   voting.begin = new Date(voting.begin) if voting.begin not instanceof Date
-  voting.end = new Date(voting.begin.getTime() + DAY) if not voting.end  
-  voting.end = new Date(voting.end) if voting.end not instanceof Date
+  if not voting.end    
+    voting.end = moment(voting.begin).add('days', DEFAULT_DURATION).toDate()
+  else
+    voting.end = new Date(voting.end) if voting.end not instanceof Date
   
   diff = voting.end.getTime() - voting.begin.getTime()
   return 'end before begin' if diff < 0

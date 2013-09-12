@@ -1,6 +1,8 @@
 
 should = require('should')
 request = require('request')
+moment = require('moment')
+
 
 module.exports = (port) ->
   
@@ -29,7 +31,7 @@ module.exports = (port) ->
       id: 1,
       name: 'voting1',
       desc: 'testin voting'
-      begin: new Date(new Date().getTime() + (1000 * 60 * 60 * 25)),
+      begin: moment().add('days', 2).format(),
       category_id: 2
 
     request.post "#{s}/voting/", {form: voting}, (err, res) ->
