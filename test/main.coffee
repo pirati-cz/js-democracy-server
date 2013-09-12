@@ -2,23 +2,32 @@
 should = require('should')
 http = require('http')
 request = require('request')
+fs = require('fs')
 votingtest = require('./voting')
 votetests = require('./vote')
+
+process.env.SQLITE_URL = __dirname + '/../testdb.sqlite'
 
 app = require(__dirname + '/../lib/app')
 port = 8080
 server = http.createServer(app)
 
 
+db = require(__dirname + '/../lib/models')
+
+
 describe "app", ->
 
   before (done) ->
+    db.sequelize.sync()
     server.listen port, (err, result) ->
       return done err if err
       done()
 
   after (done) ->
-    server.close ->
+    server.close()
+    fs.unlink process.env.SQLITE_URL, (err) ->
+      return done(err) if err
       done()
 
   it "should exist", (done) ->
