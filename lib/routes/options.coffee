@@ -8,14 +8,19 @@ POST /options/:votingID/
 Creates another option within given voting (only before voting begins).
 ###
 exports.createOption = (req, res, next) ->
-  v = models.Option.build(req.body)
-  v.votingId = req.params.votingID
-  v.save().success((saved) ->
-    req.log.debug
-      voting: saved
-    res.send 201, saved
-  ).error (err) ->
-    next(err)
+  models.Voting.find(
+    where: {id: req.params.votingID}
+  ).success (voting) ->
+    return res.send 404 if not voting
+    
+    v = models.Option.build(req.body)
+    v.votingId = req.params.votingID
+    v.save().success((saved) ->
+      req.log.debug
+        voting: saved
+      res.send 201, saved
+    ).error (err) ->
+      res.send 400, err 
 
 ###
 PUT /options/:votingID/:optionID/

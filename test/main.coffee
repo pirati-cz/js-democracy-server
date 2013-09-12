@@ -4,6 +4,7 @@ http = require('http')
 request = require('request')
 fs = require('fs')
 votingtest = require('./voting')
+optionstests = require('./options')
 votetests = require('./vote')
 
 process.env.SQLITE_URL = __dirname + '/../testdb.sqlite'
@@ -41,4 +42,5 @@ describe "app", ->
       done()
 
   votingtest(port)
+  optionstests(port)
   votetests(port)
