@@ -12,10 +12,12 @@ unless global.hasOwnProperty("db")
     # the application is executed on the local machine ... use sqlite
     Sequelize = require('sequelize-sqlite').sequelize
     sqlite    = require('sequelize-sqlite').sqlite
-
+    sqliteURL = process.env.SQLITE_URL or '/tmp/db.sqlite'
+    
+    console.log "Using DB within #{sqliteURL}"
     sequelize = new Sequelize('database', 'username', 'password',
       dialect: 'sqlite',
-      storage: __dirname + '/../database.sqlite',
+      storage: sqliteURL,
       foreignKeys: false
     )
 
