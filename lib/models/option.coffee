@@ -8,11 +8,8 @@ module.exports = (sequelize, DataTypes) ->
     id:
       type: DataTypes.INTEGER,
       allowNull: false,
-    votingId:
-      type: DataTypes.BIGINT,
-      allowNull: false,
     name: 
       type: DataTypes.STRING(64),
       allowNull: false,
     desc: DataTypes.STRING,
-    url: DataTypes.STRING
+    url: DataTypes.STRING    

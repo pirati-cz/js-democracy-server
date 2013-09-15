@@ -13,7 +13,7 @@ unless global.hasOwnProperty("db")
     Sequelize = require('sequelize-sqlite').sequelize
     sqlite    = require('sequelize-sqlite').sqlite
     sqliteURL = process.env.SQLITE_URL or '/tmp/db.sqlite'
-    
+
     console.log "Using DB within #{sqliteURL}"
     sequelize = new Sequelize('database', 'username', 'password',
       dialect: 'sqlite',
@@ -25,8 +25,8 @@ unless global.hasOwnProperty("db")
   Option = sequelize.import(__dirname + "/option")
   Vote = sequelize.import(__dirname + "/vote")
 
-  # create relationships
-  Voting.hasMany(Vote, {as: 'Votes'})
+  Voting.hasMany(Vote, {foreignKey: 'votingId'})
+  Voting.hasMany(Option, {foreignKey: 'votingId'})
 
   global.db =
     Sequelize: Sequelize
