@@ -51,6 +51,9 @@ module.exports = function (grunt) {
         }]
       }
     },
+    coffeelint: {
+      app: ['{,*/}*.coffee']
+    },
     mochaTest: {
       test: {
         options: {
@@ -69,7 +72,7 @@ module.exports = function (grunt) {
     'watch'
   ]);
 
-  grunt.registerTask('test', ['mochaTest']);
+  grunt.registerTask('test', ['coffeelint', 'mochaTest']);
 
   grunt.registerTask('default', ['server']);
 };

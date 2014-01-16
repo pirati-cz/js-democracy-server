@@ -29,7 +29,8 @@
     "sequelize-sqlite": "*",
     "should": "*",
     "request": "*",
-    "grunt-mocha-test": "~0.8.1"
+    "grunt-mocha-test": "~0.8.1",
+    "grunt-coffeelint": "0.0.8"
   },
   "scripts": {
     "start": "node main.js",
