@@ -5,7 +5,7 @@ moment = require('moment')
 
 
 module.exports = (port) ->
-  
+
   s = "http://localhost:#{port}"
 
   it "must not create a vote if requred param is missing", (done) ->
@@ -13,9 +13,9 @@ module.exports = (port) ->
       desc: 'testin voting'
 
     request.post "#{s}/voting/", {form: votingwithoutname}, (err, res) ->
-        return done err if err
-        res.statusCode.should.eql 400
-        done()
+      return done err if err
+      res.statusCode.should.eql 400
+      done()
 
 
   it "shall return empty voting list", (done) ->
@@ -35,10 +35,10 @@ module.exports = (port) ->
       category_id: 2
 
     request.post "#{s}/voting/", {form: voting}, (err, res) ->
-        return done err if err
-        res.statusCode.should.eql 201
-        res.should.be.json
-        done()
+      return done err if err
+      res.statusCode.should.eql 201
+      res.should.be.json
+      done()
 
 
   it "shall return voting list of lenght 1 (just created)", (done) ->
@@ -48,7 +48,7 @@ module.exports = (port) ->
       JSON.parse(body).length.should.eql 1
       done()
 
-  
+
   it "shall return voting with given ID", (done) ->
     request "#{s}/voting/1/", (err, res, body) ->
       return done err if err
@@ -61,7 +61,7 @@ module.exports = (port) ->
 
   it "shall update voting with given ID with desired values", (done) ->
     changed = {name: "The changed voting"}
-      
+
     request.put "#{s}/voting/1/", {form: changed}, (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200

@@ -9,18 +9,18 @@ DEFAULT_DURATION = process.env.VOTINGDEFAULTDURATION or DAY
 
 checkVotingInterva = (voting) ->
   now = new Date()
-  
+
   voting.begin = new Date(voting.begin) if voting.begin not instanceof Date
-  if not voting.end    
+  if not voting.end
     voting.end = moment(voting.begin).add('days', DEFAULT_DURATION).toDate()
   else
     voting.end = new Date(voting.end) if voting.end not instanceof Date
-  
+
   diff = voting.end.getTime() - voting.begin.getTime()
   return 'end before begin' if diff < 0
   if diff < (process.env.VOTINGMININTERVAL or DAY)
     return 'too small interval'
-  
+
   fromNow = voting.begin.getTime() - now.getTime()
   if fromNow < (process.env.VOTINGMINDELAY or DAY)
     return 'too early voting begin'
@@ -31,11 +31,11 @@ POST /voting/
 Creates a new voting according request data (admin only).
 ###
 exports.createVoting = (req, res, next) ->
-  v = models.Voting.build(req.body)  
-  
+  v = models.Voting.build(req.body)
+
   err = checkVotingInterva(v)
   return res.send(400, err) if err
-  
+
   v.save().success((savedvoting) ->
     req.log.debug
       voting: savedvoting
@@ -43,7 +43,7 @@ exports.createVoting = (req, res, next) ->
     res.send(201, v)
   ).error (err) ->
     res.send(400, err)
-    
+
 ###
 GET /votinglist/
 Lists all votings which authenticated (or delegated) user can vote.
@@ -64,7 +64,7 @@ exports.getVoting = (req, res, next) ->
     res.send 200, found
   ).error (err) ->
     next(err)
-  
+
 
 ###
 PUT /voting/:votingID/
@@ -80,4 +80,3 @@ exports.updateVoting = (req, res, next) ->
       next(err)
   ).error (err) ->
     next(err)
-  
