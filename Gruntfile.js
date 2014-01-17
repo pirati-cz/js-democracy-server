@@ -30,15 +30,6 @@ module.exports = function (grunt) {
     clean: {
       server: 'tmp'
     },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        'lib/{,*/}*.js'
-      ]
-    },
     coffee: {
       options: {bare: true},
       dist: {
