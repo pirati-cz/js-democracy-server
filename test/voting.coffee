@@ -6,13 +6,34 @@ moment = require('moment')
 
 module.exports = (port) ->
 
+  getVotingObj = ->
+    v =
+      name: "test voting 1"
+      desc: "testing voting 1 desc"
+      category_id: 2
+      begin: moment().add('days', 2).format()
+      options: [
+        { name: 'to1', desc: 'testin option 1', url: 'http://pirati.cz' }
+      ]
+
   s = "http://localhost:#{port}"
 
-  it "must not create a vote if requred param is missing", (done) ->
-    votingwithoutname =
-      desc: 'testin voting'
+
+  it "must not create a vote if requred param (name) is missing", (done) ->
+    votingwithoutname = getVotingObj()
+    delete votingwithoutname['name']
 
     request.post "#{s}/voting/", {form: votingwithoutname}, (err, res) ->
+      return done err if err
+      res.statusCode.should.eql 400
+      done()
+
+
+  it "must fail with 400 if no option is provided", (done) ->
+    votingwithoutopts = getVotingObj()
+    delete votingwithoutopts['options']
+
+    request.post "#{s}/voting/", {form: votingwithoutopts}, (err, res) ->
       return done err if err
       res.statusCode.should.eql 400
       done()
@@ -27,14 +48,7 @@ module.exports = (port) ->
 
 
   it "should create new voting on right POST request", (done) ->
-    voting =
-      id: 1,
-      name: 'voting1',
-      desc: 'testin voting'
-      begin: moment().add('days', 2).format(),
-      category_id: 2
-
-    request.post "#{s}/voting/", {form: voting}, (err, res) ->
+    request.post "#{s}/voting/", {form: getVotingObj()}, (err, res) ->
       return done err if err
       res.statusCode.should.eql 201
       res.should.be.json
@@ -54,19 +68,35 @@ module.exports = (port) ->
       return done err if err
       res.statusCode.should.eql 200
       voting = JSON.parse(body)
-      voting.name.should.eql 'voting1'
-      voting.desc.should.eql 'testin voting'
+      voting.name.should.eql getVotingObj().name
+      voting.desc.should.eql getVotingObj().desc
+      voting.options.length.should.eql 1
+      voting.options[0].name = 'to1'
       done()
 
 
   it "shall update voting with given ID with desired values", (done) ->
-    changed = {name: "The changed voting"}
+    changed =
+      name: "The changed voting",
+      options: [
+        { name: 'to1', desc: 'testin option 1', url: 'http://pirati.cz' }
+        { name: 'to2', desc: 'testin option 2', url: 'http://pirati.cz/mo' }
+      ]
 
     request.put "#{s}/voting/1/", {form: changed}, (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200
       voting = JSON.parse(body)
       voting.name.should.eql 'The changed voting'
-      voting.desc.should.eql 'testin voting'
+      voting.desc.should.eql 'testing voting 1 desc'
+      voting.options.length.should.eql 2
+      done()
+
+  it "must not update voting with empty options", (done) ->
+    changed = { options: [] }
+
+    request.put "#{s}/voting/1/", {form: changed}, (err, res, body) ->
+      return done err if err
+      res.statusCode.should.eql 400
       done()
 
