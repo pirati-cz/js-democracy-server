@@ -4,36 +4,30 @@ http = require('http')
 request = require('request')
 fs = require('fs')
 votingtest = require('./voting')
-optionstests = require('./options')
 votetests = require('./vote')
 
-process.env.SQLITE_URL = __dirname + '/../testdb.sqlite'
-
-app = require(__dirname + '/../lib/app')
-port = 8080
-server = http.createServer(app)
-
-
-db = require(__dirname + '/../lib/models')
-
+port = process.env.PORT || 3333
 
 describe "app", ->
 
-  before (done) ->
-    db.sequelize.sync()
-    server.listen port, (err, result) ->
-      return done err if err
+  if process.env.MOCHA_DEBUG_RUN
+    console.log("Running for sending requests to localhost:#{port}")
+  else
+    app = require(__dirname + '/../lib/app')
+    server = http.createServer(app)
+
+    before (done) ->
+      server.listen port, (err, result) ->
+        return done err if err
       done()
 
-  after (done) ->
-    server.close()
-    fs.unlink process.env.SQLITE_URL, (err) ->
-      return done(err) if err
+    after (done) ->
+      server.close()
       done()
 
-  it "should exist", (done) ->
-    should.exist app
-    done()
+    it "should exist", (done) ->
+      should.exist app
+      done()
 
   it "should be listening at localhost:#{port}", (done) ->
     request "http://localhost:#{port}/", (err, res) ->
@@ -42,5 +36,4 @@ describe "app", ->
       done()
 
   votingtest(port)
-  optionstests(port)
   votetests(port)
