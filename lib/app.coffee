@@ -31,7 +31,8 @@ app.configure ->
   app.use express.logger("dev") # 'default', 'short', 'tiny', 'dev'
   app.use(express.compress())
   app.use(express.methodOverride())
-  app.use(express.bodyParser())
+  app.use(express.json())
+  app.use(express.urlencoded())
   app.use((req, res, next) ->
     req.log = logger
     next()
