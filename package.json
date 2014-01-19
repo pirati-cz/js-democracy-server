@@ -10,7 +10,7 @@
     "coffee-script": "*",
     "assert-plus": "0.1.4",
     "bunyan": "0.21.1",
-    "sequelize": "*",
+    "sequelize": "1.6.0",
     "express": "*",
     "moment": "~2.1.0"
   },
@@ -30,7 +30,9 @@
     "should": "*",
     "request": "*",
     "grunt-mocha-test": "~0.8.1",
-    "grunt-coffeelint": "0.0.8"
+    "grunt-coffeelint": "0.0.8",
+    "grunt-develop": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "scripts": {
     "start": "node main.js",

@@ -1,13 +1,14 @@
 module.exports = (grunt) ->
-  
+
   # load all grunt tasks
   require("matchdep").filterDev("grunt-*").forEach grunt.loadNpmTasks
-  
+
   grunt.initConfig
     watch:
       coffee:
         files: ["lib/{,*/}*.coffee"]
-        tasks: ["coffee:dist"]
+        options: { nospawn: true }
+        tasks: ["coffee:dist", "develop"]
 
       coffeeTest:
         files: ["test/spec/{,*/}*.coffee"]
@@ -16,13 +17,22 @@ module.exports = (grunt) ->
     connect:
       options:
         port: 9000
-        
+
         # Change this to '0.0.0.0' to access the server from outside.
         hostname: "localhost"
 
     open:
       server:
         url: "http://localhost:<%= connect.options.port %>"
+
+    develop:
+      server:
+        file: 'main.js'
+        cmd: 'node'
+        nodeArgs: ['--debug']
+        env:
+          NODE_ENV: 'devel'
+          PORT: 3000
 
     clean:
       server: "tmp"
@@ -51,6 +61,7 @@ module.exports = (grunt) ->
 
         src: ["test/**/*.coffee"]
 
-  grunt.registerTask "server", ["clean:server", "connect", "open", "watch"]
+
+  grunt.registerTask "devserver", ["clean:server", "coffee", "develop", "watch"]
   grunt.registerTask "test", ["coffeelint", "mochaTest"]
-  grunt.registerTask "default", ["server"]
+  grunt.registerTask "default", ["devserver"]
