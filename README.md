@@ -1,3 +1,5 @@
+[![build status](https://secure.travis-ci.org/vencax/js-democracy-server.png?branch=master)](https://secure.travis-ci.org/vencax/js-democracy-server)
+
 Název systému
 Popis účelu systému a jeho místa v kontextu stranických IT systémů
 Pro hlasovani vseho druhu. Administraci hlasovani, rozesilani upozorneni, vyhodonocovani vysledku.
