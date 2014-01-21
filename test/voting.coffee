@@ -48,10 +48,13 @@ module.exports = (port) ->
 
 
   it "should create new voting on right POST request", (done) ->
-    request.post "#{s}/voting/", {form: getVotingObj()}, (err, res) ->
+    request.post "#{s}/voting/", {form: getVotingObj()}, (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 201
       res.should.be.json
+      voting = JSON.parse(body)
+      voting.desc.should.eql 'testing voting 1 desc'
+      voting.options.length.should.eql 1
       done()
 
 
