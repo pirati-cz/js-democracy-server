@@ -47,6 +47,13 @@ module.exports = (port) ->
       done()
 
 
+  it "shall return 404 on get nonexistent voting", (done) ->
+    request "#{s}/voting/22222/", (err, res, body) ->
+      return done err if err
+      res.statusCode.should.eql 404
+      done()
+
+
   it "should create new voting on right POST request", (done) ->
     request.post "#{s}/voting/", {form: getVotingObj()}, (err, res, body) ->
       return done err if err
@@ -77,15 +84,14 @@ module.exports = (port) ->
       voting.options[0].name = 'to1'
       done()
 
+  changed =
+    name: "The changed voting",
+    options: [
+      { name: 'to1', desc: 'testin option 1', url: 'http://pirati.cz' }
+      { name: 'to2', desc: 'testin option 2', url: 'http://pirati.cz/mo' }
+    ]
 
   it "shall update voting with given ID with desired values", (done) ->
-    changed =
-      name: "The changed voting",
-      options: [
-        { name: 'to1', desc: 'testin option 1', url: 'http://pirati.cz' }
-        { name: 'to2', desc: 'testin option 2', url: 'http://pirati.cz/mo' }
-      ]
-
     request.put "#{s}/voting/1/", {form: changed}, (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200
@@ -101,5 +107,11 @@ module.exports = (port) ->
     request.put "#{s}/voting/1/", {form: changed}, (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 400
+      done()
+      
+  it "shall return 404 on updating nonexistent voting", (done) ->
+    request.put "#{s}/voting/22222/", {form: changed}, (err, res, body) ->
+      return done err if err
+      res.statusCode.should.eql 404
       done()
 
