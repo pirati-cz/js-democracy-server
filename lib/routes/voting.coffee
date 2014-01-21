@@ -20,15 +20,15 @@ checkVotingInterva = (voting) ->
   diff = voting.end.getTime() - voting.begin.getTime()
   return 'end before begin' if diff < 0
   if diff < (process.env.VOTINGMININTERVAL or DAY)
-    return 'too small interval'
+    return 400 # 'too small interval'
 
   fromNow = voting.begin.getTime() - now.getTime()
   if fromNow < (process.env.VOTINGMINDELAY or DAY)
-    return 'too early voting begin'
+    return 400 # 'too early voting begin'
 
 checkOptions = (options) ->
   if !options or options is []
-    return 'no options provided'
+    return 400 # 'no options provided'
 
 
 ###
@@ -43,14 +43,16 @@ exports.createVoting = (req, res, next) ->
   err = checkOptions(req.body.options)
   return next(err) if err
 
-  models.Voting.create(req.body).complete (savedvoting, err) ->
-    return next(err) if err
+  models.Voting.create(req.body).complete (err, voting) ->
+    return next(400) if err
 
-    utils.saveOptions savedvoting, req.body.options, (opts, err) ->
-      return next(err) if err
+    utils.saveOptions voting, req.body.options, (err) ->
+      return next(400) if err
 
-      req.log.debug({voting: savedvoting}, "createVoting: done")
-      res.send(201, savedvoting)
+      req.log.debug({voting: voting}, "createVoting: done")
+      rv = Object(voting.dataValues)
+      rv.options = req.body.options
+      res.send(201, rv)
 
 
 ###
@@ -67,40 +69,40 @@ GET /voting/:votingID/
 Retrieves all informations abount given voting.
 ###
 exports.getVoting = (req, res, next) ->
-  utils.retrieveVoting({id: req.params.votingID}
-  , (found) ->
-    utils.retrieveOptions(found, (opts) ->
-      rv = Object(found.dataValues)
+  utils.retrieveVoting {id: req.params.votingID}, (e, voting) ->
+    return next(e) if e
+    return next(404) if not voting
+
+    utils.retrieveOptions voting, (e, opts) ->
+      return next(e) if e
+
+      rv = Object(voting.dataValues)
       rv.options = opts
       res.send 200, rv
-    )
-  , (err) ->
-    next(err)
-  )
+
 
 ###
 PUT /voting/:votingID/
 Updates a new voting according request data (admin only).
 ###
 exports.updateVoting = (req, res, next) ->
-  models.Voting.find(
-    where: {id: req.params.votingID},
-  ).complete (voting, err) ->
-    return next(err) if err
+  utils.retrieveVoting {id: req.params.votingID}, (e, voting) ->
+    return next(e) if e
+    return next(404) if not voting
 
     err = checkOptions(req.body.options)
     return next(err) if err
 
-    found.updateAttributes(req.body).complete (updated, err) ->
+    voting.updateAttributes(req.body).complete (err, updated) ->
       return next(err) if err
 
-      updated.setOptions([]).complete (opts, err) ->
+      updated.setOptions([]).complete (err, delOpts) ->
         return next(err) if err
 
-        utils.saveOptions updated, req.body.options, (opts, err) ->
+        utils.saveOptions updated, req.body.options, (err) ->
           return next(err) if err
 
           rv = Object(updated.dataValues)
-          rv.options = opts
+          rv.options = req.body.options
           res.send 200, rv
 

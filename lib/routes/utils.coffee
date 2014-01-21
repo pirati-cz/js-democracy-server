@@ -1,20 +1,10 @@
 models = require('../models')
 
-exports.retrieveVoting = (conds, onFound, onErr) ->
-  models.Voting.find(where: conds)
-  .success((found) ->
-    return onErr('not found') if not found
-    onFound(found)
-  ).error (err) ->
-    onErr(err)
+exports.retrieveVoting = (conds, cb) ->
+  models.Voting.find(where: conds).complete(cb)
 
-exports.retrieveOptions = (voting, done, onErr) ->
-  models.Option.findAll(
-    where: {votingId: voting.id},
-  ).success((found) ->
-    done(found)
-  ).error (err) ->
-    onErr(err)
+exports.retrieveOptions = (voting, cb) ->
+  models.Option.findAll(where: {votingId: voting.id}).complete(cb)
 
 exports.saveOptions = (voting, options, cb) ->
   opts = []
