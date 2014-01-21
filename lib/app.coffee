@@ -24,6 +24,11 @@ createLogger = () ->
     streams: [default_stream, debug_stream]
 
 
+errorHandler = (err, req, res, next) ->
+  return next(err) if typeof(err) != 'number'
+  res.send err
+
+
 app = express()
 logger = createLogger()
 
@@ -37,6 +42,9 @@ app.configure ->
     req.log = logger
     next()
   )
+  app.use(app.router)
+  app.use(errorHandler)
+
   api.createAPI(app)
 
   # Register a default '/' handler

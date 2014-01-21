@@ -1,6 +1,5 @@
 
 moment = require('moment')
-errors = require('../errors')
 models = require('../models')
 utils = require('./utils')
 

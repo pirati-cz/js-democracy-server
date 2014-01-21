@@ -1,6 +1,5 @@
 
 
-models = require('../errors')
 models = require('../models')
 
 
@@ -25,7 +24,7 @@ exports.doVote = (req, res, next) ->
           votingId: req.params.votingID
       vote.preference = req.body.preference
       vote.note = req.body.note
-      vote.save().complete (e, saved
+      vote.save().complete (e, saved) ->
         return next(e) if e
         
         req.log.debug
