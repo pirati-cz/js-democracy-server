@@ -38,21 +38,20 @@ Creates a new voting according request data (admin only).
 exports.createVoting = (req, res, next) ->
 
   err = checkVotingInterva(req.body)
-  return res.send(400, err) if err
+  return next(err) if err
 
   err = checkOptions(req.body.options)
-  return res.send(400, err) if err
+  return next(err) if err
 
-  models.Voting.create(req.body).success((savedvoting) ->
-    utils.saveOptions(savedvoting, req.body.options
-    , ->
+  models.Voting.create(req.body).complete (savedvoting, err) ->
+    return next(err) if err
+
+    utils.saveOptions savedvoting, req.body.options, (opts, err) ->
+      return next(err) if err
+
       req.log.debug({voting: savedvoting}, "createVoting: done")
       res.send(201, savedvoting)
-    , (err) ->
-      res.send(400, err)
-    )
-  ).error (err) ->
-    res.send(400, err)
+
 
 ###
 GET /votinglist/
@@ -86,22 +85,22 @@ Updates a new voting according request data (admin only).
 exports.updateVoting = (req, res, next) ->
   models.Voting.find(
     where: {id: req.params.votingID},
-  ).success((found) ->
+  ).complete (voting, err) ->
+    return next(err) if err
+
     err = checkOptions(req.body.options)
-    return res.send(400, err) if err
+    return next(err) if err
 
-    found.updateAttributes(req.body).success((updated) ->
+    found.updateAttributes(req.body).complete (updated, err) ->
+      return next(err) if err
 
-      updated.setOptions([]).success((opts) ->
-        utils.saveOptions(updated, req.body.options, (opts) ->
+      updated.setOptions([]).complete (opts, err) ->
+        return next(err) if err
+
+        utils.saveOptions updated, req.body.options, (opts, err) ->
+          return next(err) if err
+
           rv = Object(updated.dataValues)
           rv.options = opts
           res.send 200, rv
-        , ->
-          res.send 400
-        )
-      )
-    ).error (err) ->
-      next(err)
-  ).error (err) ->
-    next(err)
+

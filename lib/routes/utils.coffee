@@ -16,7 +16,7 @@ exports.retrieveOptions = (voting, done, onErr) ->
   ).error (err) ->
     onErr(err)
 
-exports.saveOptions = (voting, options, done, onErr) ->
+exports.saveOptions = (voting, options, cb) ->
   opts = []
   for o, idx in options
     opt = {votingId: voting.id, id: idx}
@@ -24,8 +24,5 @@ exports.saveOptions = (voting, options, done, onErr) ->
       opt[k] = v
     opts.push(opt)
 
-  models.Option.bulkCreate(opts)
-  .success(->
-    done(opts))
-  .error(onErr)
+  models.Option.bulkCreate(opts).complete cb
 
