@@ -7,6 +7,7 @@ unless global.hasOwnProperty("db")
     sequelize = new Sequelize(process.env.POSTGRESQL_URL,
       dialect: "postgres"
       protocol: "postgres"
+      logging: false
     )
   else
     # the application is executed on the local machine ... use sqlite
@@ -16,8 +17,8 @@ unless global.hasOwnProperty("db")
 
     console.log "Using DB within #{sqliteURL}"
     sequelize = new Sequelize('database', 'username', 'password',
-      dialect: 'sqlite',
-      storage: sqliteURL,
+      dialect: 'sqlite'
+      storage: sqliteURL
       foreignKeys: false
     )
 
