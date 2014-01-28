@@ -3,14 +3,14 @@
 # JS-democracy server
 
 Software for performing democratic agendas such as voting.
-This is a pilot version for purposes of pirate [http://pirati.cz](party-cz).
+This is a pilot version for purposes of [pirate party-cz](http://pirati.cz).
 Communication through REST API.
 
-Written in [http://coffeescript.org/](coffeescript), uses latest and greatest libraries, such as:
-- [http://expressjs.com/](express)
-- [http://gruntjs.com/](grunt)
-- [http://visionmedia.github.io/mocha/](mocha)
+Written in [coffeescript](http://coffeescript.org/), uses latest and greatest libraries, such as:
+- [express](http://expressjs.com/)
+- [grunt](http://gruntjs.com/)
+- [mocha](http://visionmedia.github.io/mocha/)
 
 supports for CORS requests and other features are on it way.
 
-If you want to give a feedback, [https://github.com/vencax/js-democracy-server/issues](raise an issue).
+If you want to give a feedback, [raise an issue](https://github.com/vencax/js-democracy-server/issues).
