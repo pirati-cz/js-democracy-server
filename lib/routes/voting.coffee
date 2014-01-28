@@ -61,7 +61,26 @@ Currently all.
 ###
 exports.getVotinglist = (req, res, next) ->
   models.Voting.findAll().success (found) ->
-    res.send 200, found
+    return res.send 200, found if not found
+
+    ids = (f.id for f in found)
+    q = "SELECT * FROM Options WHERE votingId IN (#{ids.join(',')})"
+
+    models.sequelize.query(q, models.Option).complete (e, opts) ->
+      return next(e) if e
+      
+      rv = []
+
+      for v in found
+        vopts = []
+        for o in opts
+          vopts.push(o) if o.votingId == v.id
+        obj = Object(v.dataValues)
+        obj.options = vopts
+        rv.push(obj)
+
+      res.send 200, rv
+
 
 ###
 GET /voting/:votingID/

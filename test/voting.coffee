@@ -69,7 +69,10 @@ module.exports = (port) ->
     request "#{s}/voting", (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200
-      JSON.parse(body).length.should.eql 1
+      votings = JSON.parse(body)
+      votings.length.should.eql 1
+      votings[0].name.should.eql getVotingObj().name
+      votings[0].options[0].name.should.eql getVotingObj().options[0].name
       done()
 
 
@@ -108,7 +111,7 @@ module.exports = (port) ->
       return done err if err
       res.statusCode.should.eql 400
       done()
-      
+
   it "shall return 404 on updating nonexistent voting", (done) ->
     request.put "#{s}/voting/22222/", {form: changed}, (err, res, body) ->
       return done err if err
