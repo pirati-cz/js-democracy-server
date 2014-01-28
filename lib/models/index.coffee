@@ -4,11 +4,12 @@ unless global.hasOwnProperty("db")
 
   if process.env.POSTGRESQL_URL
     # the application is executed on Heroku ... use the postgres database
-    sequelize = new Sequelize(process.env.POSTGRESQL_URL,
+    match = process.env.POSTGRESQL_URL.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/)
+    sequelize = new Sequelize match[5], match[1], match[2],
+      port:     match[4]
+      host:     match[3]
       dialect: "postgres"
-      protocol: "postgres"
       logging: false
-    )
   else
     # the application is executed on the local machine ... use sqlite
     Sequelize = require('sequelize-sqlite').sequelize
