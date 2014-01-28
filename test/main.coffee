@@ -14,12 +14,16 @@ describe "app", ->
     console.log("Running for sending requests to localhost:#{port}")
   else
     app = require(__dirname + '/../lib/app')
-    server = http.createServer(app)
+    server = []
 
     before (done) ->
-      server.listen port, (err, result) ->
-        return done err if err
-      done()
+      app.sync (err) ->
+        return done(err) if err
+
+        server = http.createServer(app)
+        server.listen port, (err, result) ->
+          return done(err) if err
+          done()
 
     after (done) ->
       server.close()

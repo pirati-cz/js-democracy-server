@@ -5,6 +5,6 @@ preference is JSON serialized answer depending on voting.type.
 ###
 module.exports = (sequelize, DataTypes) ->
   sequelize.define "Vote",
-    user_id: DataTypes.BIGINT,
-    preference: DataTypes.STRING,
-    note: DataTypes.STRING,
+    user_id: DataTypes.BIGINT
+    preference: DataTypes.STRING
+    note: DataTypes.STRING

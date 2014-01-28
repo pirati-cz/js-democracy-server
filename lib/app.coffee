@@ -3,6 +3,7 @@ bunyan = require("bunyan")
 express = require("express")
 cors = require('cors')
 api = require('./api')
+models = require('./models')
 
 createLogger = () ->
 
@@ -52,5 +53,11 @@ app.configure ->
   # Register a default '/' handler
   app.get "/", (req, res, next) ->
     res.send 200, app.routes
+
+app.sync = (done) ->
+  models.sequelize.sync().success ->
+    done()
+  .error (e) ->
+    done(e)
 
 module.exports = app

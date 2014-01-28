@@ -36,8 +36,6 @@ unless global.hasOwnProperty("db")
     Option: Option
     Vote: Vote
 
-  sequelize.sync()
-
 module.exports = global.db
 
 
