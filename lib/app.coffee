@@ -1,6 +1,7 @@
 assert = require("assert-plus")
 bunyan = require("bunyan")
 express = require("express")
+cors = require('cors')
 api = require('./api')
 
 createLogger = () ->
@@ -42,6 +43,7 @@ app.configure ->
     req.log = logger
     next()
   )
+  app.use(cors({maxAge: 86400}))
   app.use(app.router)
   app.use(errorHandler)
 
