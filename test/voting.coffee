@@ -23,7 +23,7 @@ module.exports = (port) ->
     votingwithoutname = getVotingObj()
     delete votingwithoutname['name']
 
-    request.post "#{s}/voting/", {form: votingwithoutname}, (err, res) ->
+    request.post "#{s}/voting", {form: votingwithoutname}, (err, res) ->
       return done err if err
       res.statusCode.should.eql 400
       done()
@@ -33,14 +33,14 @@ module.exports = (port) ->
     votingwithoutopts = getVotingObj()
     delete votingwithoutopts['options']
 
-    request.post "#{s}/voting/", {form: votingwithoutopts}, (err, res) ->
+    request.post "#{s}/voting", {form: votingwithoutopts}, (err, res) ->
       return done err if err
       res.statusCode.should.eql 400
       done()
 
 
   it "shall return empty voting list", (done) ->
-    request "#{s}/votinglist/", (err, res, body) ->
+    request "#{s}/voting", (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200
       JSON.parse(body).should.eql []
@@ -66,7 +66,7 @@ module.exports = (port) ->
 
 
   it "shall return voting list of lenght 1 (just created)", (done) ->
-    request "#{s}/votinglist/", (err, res, body) ->
+    request "#{s}/voting", (err, res, body) ->
       return done err if err
       res.statusCode.should.eql 200
       JSON.parse(body).length.should.eql 1
