@@ -1,5 +1,5 @@
 
-var app = require('./dist/app');
+var app = require('./target/app');
 
 var port = process.env.PORT || 8080;
 

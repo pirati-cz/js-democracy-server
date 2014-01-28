@@ -8,7 +8,7 @@ module.exports = (grunt) ->
       coffee:
         files: ["lib/{,*/}*.coffee"]
         options: { nospawn: true }
-        tasks: ["coffee:dist", "develop"]
+        tasks: ["coffee:target", "develop"]
 
       coffeeTest:
         files: ["test/spec/{,*/}*.coffee"]
@@ -31,18 +31,18 @@ module.exports = (grunt) ->
           PORT: 3000
 
     clean:
-      server: "dist"
+      server: "target"
 
     coffee:
       options:
         bare: true
 
-      dist:
+      target:
         files: [
           expand: true
           cwd: "lib"
           src: "{,*/}*.coffee"
-          dest: "dist"
+          dest: "target"
           ext: ".js"
         ]
 
@@ -58,6 +58,7 @@ module.exports = (grunt) ->
         src: ["test/**/*.coffee"]
 
 
-  grunt.registerTask "devserver", ["clean", "coffee", "develop", "watch"]
+  grunt.registerTask "run", ["clean", "coffee", "develop", "watch"]
   grunt.registerTask "test", ["coffeelint", "mochaTest"]
+  grunt.registerTask "build", ["clean", "coffee"]
   grunt.registerTask "default", ["devserver"]
