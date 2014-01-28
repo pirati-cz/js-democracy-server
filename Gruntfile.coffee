@@ -21,10 +21,6 @@ module.exports = (grunt) ->
         # Change this to '0.0.0.0' to access the server from outside.
         hostname: "localhost"
 
-    open:
-      server:
-        url: "http://localhost:<%= connect.options.port %>"
-
     develop:
       server:
         file: 'main.js'
@@ -35,7 +31,7 @@ module.exports = (grunt) ->
           PORT: 3000
 
     clean:
-      server: "tmp"
+      server: "dist"
 
     coffee:
       options:
@@ -46,7 +42,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: "lib"
           src: "{,*/}*.coffee"
-          dest: "tmp"
+          dest: "dist"
           ext: ".js"
         ]
 
@@ -62,6 +58,6 @@ module.exports = (grunt) ->
         src: ["test/**/*.coffee"]
 
 
-  grunt.registerTask "devserver", ["clean:server", "coffee", "develop", "watch"]
+  grunt.registerTask "devserver", ["clean", "coffee", "develop", "watch"]
   grunt.registerTask "test", ["coffeelint", "mochaTest"]
   grunt.registerTask "default", ["devserver"]
