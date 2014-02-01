@@ -1,4 +1,3 @@
-assert = require("assert-plus")
 bunyan = require("bunyan")
 express = require("express")
 cors = require('cors')
