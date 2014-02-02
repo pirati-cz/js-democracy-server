@@ -1,12 +1,14 @@
-voting = require('./routes/voting')
-vote = require('./routes/vote')
 
 
-exports.createAPI = (app) ->
-  app.get "/voting", voting.getVotinglist
-  app.post "/voting", voting.createVoting
-  app.get "/voting/:votingID/", voting.getVoting
-  app.put "/voting/:votingID/", voting.updateVoting
+exports.createAPI = (app, models) ->
 
-  app.post "/vote/:votingID/", vote.doVote
+  votingR = require('./routes/voting')(models)
+  voteR = require('./routes/vote')(models)
+
+  app.get "/voting", votingR.getVotinglist
+  app.post "/voting", votingR.createVoting
+  app.get "/voting/:votingID", votingR.findVoting, votingR.getVoting
+  app.put "/voting/:votingID", votingR.findVoting, votingR.updateVoting
+
+  app.post "/vote/:votingID", voteR.doVote
 

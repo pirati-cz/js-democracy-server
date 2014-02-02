@@ -1,7 +1,7 @@
-app = require('./lib/app')
+appinit = require('./lib/app')
 port = process.env.PORT || 8080
 
-app.sync (err) ->
+appinit (err, app) ->
   if err
     console.log err
   else

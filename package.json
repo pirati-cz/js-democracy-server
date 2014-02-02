@@ -13,8 +13,7 @@
     "express": "*",
     "moment": "~2.1.0",
     "cors": "~2.1.1",
-    "pg": "~2.11.1",
-    "mysql": "~2.0.1"
+    "mongoose": "~3.8.6"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -28,13 +27,13 @@
     "grunt-open": "~0.2.0",
     "matchdep": "~0.1.1",
     "grunt-google-cdn": "~0.1.1",
-    "sequelize-sqlite": "*",
     "should": "*",
     "request": "*",
     "grunt-mocha-test": "~0.8.1",
     "grunt-coffeelint": "0.0.8",
     "grunt-develop": "~0.3.0",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "mockgoose": "~1.6.0"
   },
   "scripts": {
     "start": "export NODE_ENV=production && node main.js",

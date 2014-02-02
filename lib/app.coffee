@@ -2,9 +2,8 @@ bunyan = require("bunyan")
 express = require("express")
 cors = require('cors')
 api = require('./api')
-models = require('./models')
 
-createLogger = () ->
+createLogger = ->
 
   # In true UNIX fashion, debug messages go to stderr, and audit records go
   # to stdout, so you can split them as you like in the shell
@@ -30,33 +29,34 @@ errorHandler = (err, req, res, next) ->
   res.send err
 
 
-app = express()
-logger = createLogger()
+createApp = (models) ->
+  app = express()
+  logger = createLogger()
 
-app.configure ->
-  app.use express.logger("dev") # 'default', 'short', 'tiny', 'dev'
-  app.use(express.compress())
-  app.use(express.methodOverride())
-  app.use(express.json())
-  app.use(express.urlencoded())
-  app.use((req, res, next) ->
-    req.log = logger
-    next()
-  )
-  app.use(cors({maxAge: 86400}))
-  app.use(app.router)
-  app.use(errorHandler)
+  app.configure ->
+    app.use express.logger("dev") # 'default', 'short', 'tiny', 'dev'
+    app.use(express.compress())
+    app.use(express.methodOverride())
+    app.use(express.json())
+    app.use(express.urlencoded())
+    app.use((req, res, next) ->
+      req.log = logger
+      next()
+    )
+    app.use(cors({maxAge: 86400}))
+    app.use(app.router)
+    app.use(errorHandler)
 
-  api.createAPI(app)
+    api.createAPI(app, models)
 
-  # Register a default '/' handler
-  app.get "/", (req, res, next) ->
-    res.send 200, app.routes
+    # Register a default '/' handler
+    app.get "/", (req, res, next) ->
+      res.send 200, app.routes
 
-app.sync = (done) ->
-  models.sequelize.sync().success ->
-    done()
-  .error (e) ->
-    done(e)
 
-module.exports = app
+module.exports = (done) ->
+  require('./models') (err, models) ->
+    return done(err) if err
+
+    app = createApp(models)
+    done(undefined, app)

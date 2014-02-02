@@ -1,126 +1,106 @@
 
 moment = require('moment')
-models = require('../models')
-utils = require('./utils')
 
 DAY = (1000 * 60 * 60 * 24)
 DEFAULT_DURATION = process.env.VOTINGDEFAULTDURATION or DAY
 
+module.exports = (models) ->
 
-checkVotingInterva = (voting) ->
-  now = new Date()
+  checkVotingInterval = (voting) ->
+    now = new Date()
 
-  voting.begin = new Date(voting.begin) if voting.begin not instanceof Date
-  if not voting.end
-    voting.end = moment(voting.begin).add('days', DEFAULT_DURATION).toDate()
-  else
-    voting.end = new Date(voting.end) if voting.end not instanceof Date
+    voting.begin = new Date(voting.begin) if voting.begin not instanceof Date
+    if not voting.end
+      voting.end = moment(voting.begin).add('days', DEFAULT_DURATION).toDate()
+    else
+      voting.end = new Date(voting.end) if voting.end not instanceof Date
 
-  diff = voting.end.getTime() - voting.begin.getTime()
-  return 'end before begin' if diff < 0
-  if diff < (process.env.VOTINGMININTERVAL or DAY)
-    return 400 # 'too small interval'
+    diff = voting.end.getTime() - voting.begin.getTime()
+    return 'end before begin' if diff < 0
+    if diff < (process.env.VOTINGMININTERVAL or DAY)
+      return 400 # 'too small interval'
 
-  fromNow = voting.begin.getTime() - now.getTime()
-  if fromNow < (process.env.VOTINGMINDELAY or DAY)
-    return 400 # 'too early voting begin'
+    fromNow = voting.begin.getTime() - now.getTime()
+    if fromNow < (process.env.VOTINGMINDELAY or DAY)
+      return 400 # 'too early voting begin'
 
-checkOptions = (options) ->
-  if !options or options is []
-    return 400 # 'no options provided'
+  checkOptions = (body) ->
+    if !body.opts or body.opts is []
+      return 400 # 'no options provided'
 
 
-###
-POST /voting/
-Creates a new voting according request data (admin only).
-###
-exports.createVoting = (req, res, next) ->
+  ###
+  Finds voting and stores it in req. React appropriately on errors.
+  ###
+  findVoting = (req, res, next) ->
+    q = models.Voting.findById(req.params.votingID)
+    q.exec (err, voting) ->
+      return next(404) if err || not voting
 
-  err = checkVotingInterva(req.body)
-  return next(err) if err
+      req.voting = voting
+      next()
 
-  err = checkOptions(req.body.options)
-  return next(err) if err
+  ###
+  POST /voting/
+  Creates a new voting according request data (admin only).
+  ###
+  createVoting = (req, res, next) ->
 
-  models.Voting.create(req.body).complete (err, voting) ->
-    return next(400) if err
+    err = checkVotingInterval(req.body)
+    return next(err) if err
 
-    utils.saveOptions voting, req.body.options, (err) ->
+    err = checkOptions(req.body)
+    return next(err) if err
+
+    voting = new models.Voting(req.body)
+    voting.save (err) ->
       return next(400) if err
 
       req.log.debug({voting: voting}, "createVoting: done")
-      rv = Object(voting.dataValues)
-      rv.options = req.body.options
-      res.send(201, rv)
+      res.send(201, voting)
 
 
-###
-GET /votinglist/
-Lists all votings which authenticated (or delegated) user can vote.
-Currently all.
-###
-exports.getVotinglist = (req, res, next) ->
-  models.Voting.findAll().success (found) ->
-    return res.send 200, found if not found
-
-    ids = (f.id for f in found)
-    q = "SELECT * FROM Options WHERE votingId IN (#{ids.join(',')})"
-
-    models.sequelize.query(q, models.Option).complete (e, opts) ->
-      return next(e) if e
-      
-      rv = []
-
-      for v in found
-        vopts = []
-        for o in opts
-          vopts.push(o) if o.votingId == v.id
-        obj = Object(v.dataValues)
-        obj.options = vopts
-        rv.push(obj)
-
-      res.send 200, rv
-
-
-###
-GET /voting/:votingID/
-Retrieves all informations abount given voting.
-###
-exports.getVoting = (req, res, next) ->
-  utils.retrieveVoting {id: req.params.votingID}, (e, voting) ->
-    return next(e) if e
-    return next(404) if not voting
-
-    utils.retrieveOptions voting, (e, opts) ->
-      return next(e) if e
-
-      rv = Object(voting.dataValues)
-      rv.options = opts
-      res.send 200, rv
-
-
-###
-PUT /voting/:votingID/
-Updates a new voting according request data (admin only).
-###
-exports.updateVoting = (req, res, next) ->
-  utils.retrieveVoting {id: req.params.votingID}, (e, voting) ->
-    return next(e) if e
-    return next(404) if not voting
-
-    err = checkOptions(req.body.options)
-    return next(err) if err
-
-    voting.updateAttributes(req.body).complete (err, updated) ->
+  ###
+  GET /votinglist/
+  Lists all votings which authenticated (or delegated) user can vote.
+  Currently all.
+  ###
+  getVotinglist = (req, res, next) ->
+    q = models.Voting.find()
+    q.exec  (err, found) ->
       return next(err) if err
 
-      updated.setOptions([]).complete (err, delOpts) ->
-        return next(err) if err
+      res.send 200, found
 
-        utils.saveOptions updated, req.body.options, (err) ->
-          return next(err) if err
 
-          rv = Object(updated.dataValues)
-          rv.options = req.body.options
-          res.send 200, rv
+  ###
+  GET /voting/:votingID/
+  Retrieves all informations abount given voting.
+  ###
+  getVoting = (req, res, next) ->
+    res.send 200, req.voting
 
+
+  ###
+  PUT /voting/:votingID/
+  Updates a new voting according request data (admin only).
+  ###
+  updateVoting = (req, res, next) ->
+    err = checkOptions(req.body)
+    return next(err) if err
+
+    for k, v of req.body
+      req.voting[k] = v
+
+    req.voting.save (err) ->
+      return next(err) if err
+
+      res.send 200, req.voting
+
+
+  # return
+  createVoting: createVoting
+  getVotinglist: getVotinglist
+  getVoting: getVoting
+  updateVoting: updateVoting
+  findVoting: findVoting

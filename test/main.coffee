@@ -1,25 +1,31 @@
 
 should = require('should')
 http = require('http')
-request = require('request')
+request = require('request').defaults({timeout: 5000})
 fs = require('fs')
 votingtest = require('./voting')
 votetests = require('./vote')
 
 port = process.env.PORT || 3333
 
+mongoose = require('mongoose')
+mockgoose = require('mockgoose')
+mockgoose(mongoose)
+
+
 describe "app", ->
 
   if process.env.MOCHA_DEBUG_RUN
     console.log("Running for sending requests to localhost:#{port}")
   else
-    app = require(__dirname + '/../lib/app')
+    app = []
     server = []
 
     before (done) ->
-      app.sync (err) ->
+      require(__dirname + '/../lib/app') (err, createdapp) ->
         return done(err) if err
 
+        app = createdapp
         server = http.createServer(app)
         server.listen port, (err, result) ->
           return done(err) if err
