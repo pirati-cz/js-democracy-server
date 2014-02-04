@@ -1,4 +1,4 @@
-[![build status](https://secure.travis-ci.org/vencax/js-democracy-server.png?branch=master)](https://secure.travis-ci.org/vencax/js-democracy-server)
+[![build status](https://secure.travis-ci.org/pirati-cz/js-democracy-server.png?branch=master)](https://secure.travis-ci.org/vencax/js-democracy-server)
 
 # JS-democracy server
 
