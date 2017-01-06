@@ -9,7 +9,7 @@ Communication through REST API.
 Written in [coffeescript](http://coffeescript.org/), uses latest and greatest libraries, such as:
 - [express](http://expressjs.com/)
 - [grunt](http://gruntjs.com/)
-- [mocha](http://visionmedia.github.io/mocha/)
+- [mocha](http://mochajs.org/)
 
 supports for CORS requests and other features are on it way.
 
